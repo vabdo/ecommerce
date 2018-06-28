@@ -2,19 +2,21 @@
 
 require_once("vendor/autoload.php");
 
-$app = new \Slim\Slim();
+use \Slim\Slim;
+use \Hcode\Page;
+
+$app = new Slim();
 
 $app->config('debug', true);
 
 $app->get('/', function() {
     
-	$sql = new Hcode\DB\Sql(); 
-	$results = $sql->select("SELECT * FROM tb_users");
-	
-	echo json_encode($results);
+	$page = new Page(); //inicia o construct, por padrao vai rodar o header
+
+	$page->setTpl("index"); //carrega o conteudo na pasta view (body)
 
 });
-
-$app->run();
+		//roda o destruct -> vai carregar o footer
+$app->run();  //
 
  ?>
