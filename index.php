@@ -19,7 +19,7 @@ $app->get('/', function() {
 });
 		//roda o destruct -> vai carregar o footer
 
-$app->get('/sistema', function() {
+$app->get("/sistema", function() {
 
 	User::verifyLogin();
     
@@ -29,7 +29,7 @@ $app->get('/sistema', function() {
 
 });
 
-$app->get('/sistema/login', function() {
+$app->get("/sistema/login", function() {
     
 	$page = new PageAdmin([
 			"header"=>false,
@@ -41,7 +41,7 @@ $app->get('/sistema/login', function() {
 
 });
 
-$app->post('/sistema/login', function() {
+$app->post("/sistema/login", function() {
     
 	
 	User::login($_POST["login"], $_POST["password"]);
@@ -52,7 +52,7 @@ $app->post('/sistema/login', function() {
 
 });
 
-$app->get('/sistema/logout', function() {
+$app->get("/sistema/logout", function() {
     
 	
 	User::logout();
@@ -61,6 +61,111 @@ $app->get('/sistema/logout', function() {
 	exit;
 
 });	
+
+$app->get("/sistema/users", function() {
+
+    User::verifyLogin();
+	
+	$users = User::listAll();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("users", array (
+			"users"=>$users
+	));
+
+
+});	
+
+$app->get("/sistema/users/create", function() {
+
+    User::verifyLogin();
+	
+	$page = new PageAdmin();
+
+	$page->setTpl("users-create");
+
+
+});	
+
+$app->get("/sistema/users/:iduser/delete", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$user->delete();
+
+	header("Location:/sistema/users");
+	exit;
+	
+
+
+
+});	
+
+
+$app->get("/sistema/users/:iduser", function($iduser) {
+
+    User::verifyLogin();
+
+    $user = new User();
+
+    $user->get((int)$iduser);
+	
+	$page = new PageAdmin();
+
+	$page->setTpl("users-update", array ( 
+		"user"=>$user->getValues()
+	));
+
+
+});	
+
+$app->post("/sistema/users/create", function() {
+
+	User::verifyLogin();
+
+	$user = new User ();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->setData($_POST);
+
+	$user->save();
+
+	header("Location: /sistema/users");
+	exit;
+
+});	
+
+
+$app->post("/sistema/users/:iduser", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User ();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->get((int)$iduser);
+ 	
+ 	$user->setData($_POST);
+
+ 	$user->update(); 
+
+
+	header("Location: /sistema/users");
+	exit;
+
+
+});	
+
+
+
+
 
 $app->run();  //
 
